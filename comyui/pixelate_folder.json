@@ -44,66 +44,6 @@
       }
     },
     {
-      "id": 7,
-      "type": "KSampler",
-      "pos": [
-        1410,
-        460
-      ],
-      "size": {
-        "0": 315,
-        "1": 262
-      },
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 10
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 7
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 8
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 9
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            11
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "KSampler"
-      },
-      "widgets_values": [
-        560786387197337,
-        "randomize",
-        20,
-        4,
-        "euler",
-        "normal",
-        0.15
-      ]
-    },
-    {
       "id": 8,
       "type": "VAEDecode",
       "pos": [
@@ -263,10 +203,10 @@
         47,
         76
       ],
-      "size": [
-        673.8097011718753,
-        244.002188232422
-      ],
+      "size": {
+        "0": 673.8096923828125,
+        "1": 244.00218200683594
+      },
       "flags": {},
       "order": 2,
       "mode": 0,
@@ -278,32 +218,6 @@
       ],
       "color": "#432",
       "bgcolor": "#653"
-    },
-    {
-      "id": 10,
-      "type": "SaveImage",
-      "pos": [
-        2068,
-        478
-      ],
-      "size": {
-        "0": 315,
-        "1": 270
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 14
-        }
-      ],
-      "properties": {},
-      "widgets_values": [
-        "sdpixel_anim"
-      ]
     },
     {
       "id": 5,
@@ -451,6 +365,92 @@
       "properties": {
         "Node name for S&R": "PreviewImage"
       }
+    },
+    {
+      "id": 7,
+      "type": "KSampler",
+      "pos": [
+        1410,
+        460
+      ],
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 10
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 7
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 8
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            11
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        996444547494667,
+        "randomize",
+        20,
+        4,
+        "euler",
+        "normal",
+        0.15
+      ]
+    },
+    {
+      "id": 10,
+      "type": "SaveImage",
+      "pos": [
+        2068,
+        478
+      ],
+      "size": [
+        874.1415521290673,
+        651.2983103350173
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "sdpixel_anim"
+      ]
     }
   ],
   "links": [
