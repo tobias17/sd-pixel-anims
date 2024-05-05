@@ -62,7 +62,7 @@ for filepath in filepaths:
     else:
         raise ValueError(f"Image has {img.shape[2]} color channels, expected 3 or 4, from {filepath}")
 
-    cv2.imwrite(out_filepath if out_filepath is not None else os.path.join(args.output_dir, os.path.basename(filepath)), out)
+    cv2.imwrite(out_filepath if out_filepath is not None else os.path.join(args.output, os.path.basename(filepath)), out)
     all_imgs.append(out)
 
 if args.spritesheet:
