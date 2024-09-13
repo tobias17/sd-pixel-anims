@@ -21,6 +21,8 @@ def create_in_place_animation(obj, action_name):
     if obj.animation_data is None or obj.animation_data.action is None:
         print(f"Object {obj.name} has no animation data or action.")
         return
+    bpy.context.scene.frame_set(0)
+    obj.location = (0,0,0)
 
     original_action = obj.animation_data.action
     

@@ -20,7 +20,15 @@ CAMERA_ROTATION_Y = 0.0
 CAMERA_ROTATION_Z = 90
 #                                            #
 anims_to_render: List[AnimToRender] = [
-    AnimToRender(anim="walk_f", save="//frames/walk_dir0_anim{}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="idle",    save="//frames/idle_cam{camera}_anim{index}.png",      frames=[1]),
+    AnimToRender(anim="walk_f",  save="//frames/walk_dir0_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="walk_fr", save="//frames/walk_dir1_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="walk_r",  save="//frames/walk_dir2_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="walk_br", save="//frames/walk_dir3_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="walk_b",  save="//frames/walk_dir4_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="walk_bl", save="//frames/walk_dir5_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="walk_l",  save="//frames/walk_dir6_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
+    AnimToRender(anim="walk_fl", save="//frames/walk_dir7_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
 ]
 #
 CAMERA_ONLY  = False
@@ -34,6 +42,8 @@ def create_in_place_animation(obj, action_name):
     if obj.animation_data is None or obj.animation_data.action is None:
         print(f"Object {obj.name} has no animation data or action.")
         return
+    bpy.context.scene.frame_set(0)
+    obj.location = (0,0,0)
 
     original_action = obj.animation_data.action
     
@@ -133,22 +143,22 @@ def main_loop():
 
     for anim_to_render in anims_to_render:
         prepare_animation(obj, anim_to_render.anim)
-        for i in range(8):
-            rad = -(i / 4.0) * math.pi
+        for camera_i in range(8):
+            rad = -(camera_i / 4.0) * math.pi
             args = [
                 CAMERA_OFFSET_X * math.cos(rad) + CAMERA_OFFSET_Y * math.sin(rad),
                 CAMERA_OFFSET_Y * math.cos(rad) + CAMERA_OFFSET_X * math.sin(rad),
                 CAMERA_OFFSET_Z,
                 CAMERA_ROTATION_X,
                 CAMERA_ROTATION_Y,
-                CAMERA_ROTATION_Z + -i*45,
+                CAMERA_ROTATION_Z + -camera_i*45,
             ]
             set_camera_position(*args)
             if CAMERA_ONLY:
-                if i == CAMERA_INDEX:
+                if camera_i == CAMERA_INDEX:
                     return
             else:
-                for index, frame_number in enumerate(anim_to_render.frames):
-                    render_frame(frame_number, anim_to_render.save.format(index))
+                for frame_i, frame_number in enumerate(anim_to_render.frames):
+                    render_frame(frame_number, anim_to_render.save.format(camera=camera_i, index=frame_i))
 
 main_loop()
