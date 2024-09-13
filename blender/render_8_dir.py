@@ -1,4 +1,4 @@
-import bpy
+import bpy, math
 from typing import List
 
 class AnimToRender:
@@ -10,8 +10,21 @@ class AnimToRender:
 
 ##############################################
 #                   SET ME                   #
-OBJ_NAME  = "warrior_character"
-ANIM_NAME = "walk_b"
+OBJ_NAME = "warrior_character"
+#                                            #
+CAMERA_OFFSET_X = 1.31
+CAMERA_OFFSET_Y = 0.0
+CAMERA_OFFSET_Z = 1.86
+CAMERA_ROTATION_X = 45
+CAMERA_ROTATION_Y = 0.0
+CAMERA_ROTATION_Z = 90
+#                                            #
+anims_to_render: List[AnimToRender] = [
+    AnimToRender(anim="walk_f", save="//frames/walk_dir0_anim{}.png", frames=[1, 6, 11, 17, 22, 27]),
+]
+#
+CAMERA_ONLY  = False
+CAMERA_INDEX = 0
 ##############################################
 
 
@@ -102,12 +115,40 @@ def prepare_animation(obj, original_animation_name):
     if not selected:
         raise ValueError(f"Object did not have original_animation_name {original_animation_name}")
     create_in_place_animation(obj, inplace_animation_name)
-    select_animation(obj, inplace_animation_name)
+
+def set_camera_position(px, py, pz, rx, ry, rz):
+    camera = bpy.data.objects['Camera']
+    camera.location = (px, py, pz)
+    camera.rotation_euler = (math.radians(rx), math.radians(ry), math.radians(rz))
+
+def render_frame(frame_number, filepath):
+    bpy.context.scene.frame_set(frame_number)
+    bpy.context.scene.render.filepath = filepath
+    bpy.ops.render.render(write_still=True)
 
 def main_loop():
     obj = bpy.data.objects.get(OBJ_NAME)
     if not obj:
         raise ValueError(f"Could not find a object named '{OBJ_NAME}', make sure you set OBJ_NAME in the script to your target object name")
-    prepare_animation(obj, ANIM_NAME)
+
+    for anim_to_render in anims_to_render:
+        prepare_animation(obj, anim_to_render.anim)
+        for i in range(8):
+            rad = -(i / 4.0) * math.pi
+            args = [
+                CAMERA_OFFSET_X * math.cos(rad) + CAMERA_OFFSET_Y * math.sin(rad),
+                CAMERA_OFFSET_Y * math.cos(rad) + CAMERA_OFFSET_X * math.sin(rad),
+                CAMERA_OFFSET_Z,
+                CAMERA_ROTATION_X,
+                CAMERA_ROTATION_Y,
+                CAMERA_ROTATION_Z + -i*45,
+            ]
+            set_camera_position(*args)
+            if CAMERA_ONLY:
+                if i == CAMERA_INDEX:
+                    return
+            else:
+                for index, frame_number in enumerate(anim_to_render.frames):
+                    render_frame(frame_number, anim_to_render.save.format(index))
 
 main_loop()
