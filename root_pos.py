@@ -3,7 +3,7 @@ import numpy as np
 
 def root_pos(in_path:str, save_path:str, scale:float):
    assert os.path.isdir(in_path), f"Expected to find folder at in_path {in_path}"
-   assert os.path.isdir(os.path.dirname(save_path)), f"Failed to find parent directory of save_path {save_path}"
+   assert os.path.isdir(os.path.dirname(os.path.realpath(save_path))), f"Failed to find parent directory of save_path {save_path}"
 
    data = {}
    for filename in os.listdir(in_path):

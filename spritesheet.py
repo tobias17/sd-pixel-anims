@@ -10,13 +10,13 @@ def map_filename(filename:str, sheet_map:List[str]) -> Optional[str]:
 
 def spritesheet(in_path:str, save_path:str, sheet_map_path:Optional[int], root_pos_path:Optional[str], delta_pos_path:Optional[str]):
    assert os.path.exists(in_path), f"Could not find in_path {in_path}"
-   assert os.path.exists(os.path.dirname(save_path)), f"Could not find containing folder for save_path {save_path}"
+   assert os.path.exists(os.path.dirname(os.path.realpath(save_path))), f"Could not find containing folder for save_path {save_path}"
 
    delta_pos: List[List[Tuple[int,int]]] = []
    if root_pos_path is not None or delta_pos_path is not None:
       assert root_pos_path is not None and delta_pos_path is not None, f"Both root_pos and delta_pos need to be set or not, cannot have 1 without the other"
       assert os.path.isfile(root_pos_path), f"Could not find root_pos file at {root_pos_path}"
-      assert os.path.isdir(os.path.dirname(delta_pos_path)), f"Could not find parent directory of root_pos filepath {root_pos_path}"
+      assert os.path.isdir(os.path.dirname(os.path.realpath(delta_pos_path))), f"Could not find parent directory of root_pos filepath {root_pos_path}"
       with open(root_pos_path, "r") as f:
          root_pos = json.load(f)
          assert isinstance(root_pos, dict)
