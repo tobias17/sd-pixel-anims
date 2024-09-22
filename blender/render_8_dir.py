@@ -2,15 +2,16 @@ import bpy, math
 from typing import List
 
 class AnimToRender:
-    def __init__(self, anim:str, save:str, frames:List[int]):
+    def __init__(self, anim:str, save:str, frames:List[int], cam_rot=0):
         self.anim = anim
         self.save = save
         self.frames = frames
+        self.cam_rot = cam_rot
 
 
 ##############################################
 #                   SET ME                   #
-OBJ_NAME = "warrior_character"
+OBJ_NAME = "witch_root"
 #                                            #
 CAMERA_OFFSET_X = 1.31
 CAMERA_OFFSET_Y = 0.0
@@ -20,7 +21,7 @@ CAMERA_ROTATION_Y = 0.0
 CAMERA_ROTATION_Z = 90
 #                                            #
 anims_to_render: List[AnimToRender] = [
-    AnimToRender(anim="idle",    save="//frames/idle_cam{camera}_anim{index}.png",      frames=[1]),
+    AnimToRender(anim="idle",    save="//frames/idle_cam{camera}_anim{index}.png",      frames=[1], cam_rot=90),
     AnimToRender(anim="walk_f",  save="//frames/walk_dir0_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
     AnimToRender(anim="walk_fr", save="//frames/walk_dir1_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
     AnimToRender(anim="walk_r",  save="//frames/walk_dir2_cam{camera}_anim{index}.png", frames=[1, 6, 11, 17, 22, 27]),
@@ -113,13 +114,14 @@ def select_animation(obj, animation_name):
     # Assign the action to the object
     obj.animation_data.action = action
     print(f"Selected animation '{animation_name}' for object '{obj.name}'.")
+    bpy.context.view_layer.update()
     return True
 
 def prepare_animation(obj, original_animation_name):
     inplace_animation_name = f"inplace_{original_animation_name}"
-    selected = select_animation(obj, inplace_animation_name)
-    if selected:
-        return
+#    selected = select_animation(obj, inplace_animation_name)
+#    if selected:
+#        return
     
     selected = select_animation(obj, original_animation_name)
     if not selected:
@@ -144,14 +146,15 @@ def main_loop():
     for anim_to_render in anims_to_render:
         prepare_animation(obj, anim_to_render.anim)
         for camera_i in range(8):
-            rad = -(camera_i / 4.0) * math.pi
+            angle_i = camera_i + (anim_to_render.cam_rot / 45)
+            rad = -(angle_i / 4.0) * math.pi
             args = [
                 CAMERA_OFFSET_X * math.cos(rad) + CAMERA_OFFSET_Y * math.sin(rad),
                 CAMERA_OFFSET_Y * math.cos(rad) + CAMERA_OFFSET_X * math.sin(rad),
                 CAMERA_OFFSET_Z,
                 CAMERA_ROTATION_X,
                 CAMERA_ROTATION_Y,
-                CAMERA_ROTATION_Z + -camera_i*45,
+                CAMERA_ROTATION_Z + -angle_i*45,
             ]
             set_camera_position(*args)
             if CAMERA_ONLY:
