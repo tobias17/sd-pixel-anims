@@ -1,5 +1,5 @@
 import os, argparse, cv2, json, re
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import numpy as np
 
 def map_filename(filename:str, sheet_map:List[str]) -> Optional[str]:
@@ -8,9 +8,18 @@ def map_filename(filename:str, sheet_map:List[str]) -> Optional[str]:
          return pattern
    return None
 
-def spritesheet(in_path:str, save_path:str, sheet_map_path:Optional[int]):
+def spritesheet(in_path:str, save_path:str, sheet_map_path:Optional[int], root_pos_path:Optional[str], delta_pos_path:Optional[str]):
    assert os.path.exists(in_path), f"Could not find in_path {in_path}"
    assert os.path.exists(os.path.dirname(save_path)), f"Could not find containing folder for save_path {save_path}"
+
+   delta_pos: List[List[Tuple[int,int]]] = []
+   if root_pos_path is not None or delta_pos_path is not None:
+      assert root_pos_path is not None and delta_pos_path is not None, f"Both root_pos and delta_pos need to be set or not, cannot have 1 without the other"
+      assert os.path.isfile(root_pos_path), f"Could not find root_pos file at {root_pos_path}"
+      assert os.path.isdir(os.path.dirname(delta_pos_path)), f"Could not find parent directory of root_pos filepath {root_pos_path}"
+      with open(root_pos_path, "r") as f:
+         root_pos = json.load(f)
+         assert isinstance(root_pos, dict)
 
    orig_filenames = [f for f in os.listdir(in_path) if f.endswith(".png")]
    if sheet_map_path is not None:
@@ -51,20 +60,30 @@ def spritesheet(in_path:str, save_path:str, sheet_map_path:Optional[int]):
    for pattern in sheet_map:
       if pattern not in found_patternes:
          continue
+      if delta_pos_path is not None:
+         delta_pos.append([])
       filenames = sorted(list(f for f,p in filename_to_pattern.items() if p == pattern))
       x = 0
       for filename in filenames:
+         if delta_pos_path is not None:
+            assert filename in root_pos, f"Could not find filename {filename} in root_pos dict"
+            delta_pos[-1].append(root_pos[filename])
          sheet[y*IMG_H:(y+1)*IMG_H, x*IMG_W:(x+1)*IMG_W] = filename_to_image[filename]
          x += 1
       y += 1
 
    cv2.imwrite(save_path, sheet)
+   if delta_pos_path is not None:
+      with open(delta_pos_path, "w") as f:
+         json.dump(delta_pos, f)
 
 if __name__ == "__main__":
    parser = argparse.ArgumentParser()
    parser.add_argument('--in-path',   type=str, required=True, help="Path to folder containing the images to package into a spritesheet")
    parser.add_argument('--save-path', type=str, required=True, help="Path to save the spritesheet at")
    parser.add_argument('--sheet-map', type=str, help="Path to a json file defining which filename patterns go in rows together")
+   parser.add_argument('--root-pos',  type=str, help="Path to a json file describing the root position of each filename")
+   parser.add_argument('--delta-pos', type=str, help="Path to save a root delta json file, requires root pos being set")
    args = parser.parse_args()
 
-   spritesheet(args.in_path, args.save_path, args.sheet_map)
+   spritesheet(args.in_path, args.save_path, args.sheet_map, args.root_pos, args.delta_pos)

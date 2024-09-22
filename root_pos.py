@@ -1,7 +1,7 @@
 import os, cv2, argparse, json
 import numpy as np
 
-def root_pos(in_path:str, save_path:str):
+def root_pos(in_path:str, save_path:str, scale:float):
    assert os.path.isdir(in_path), f"Expected to find folder at in_path {in_path}"
    assert os.path.isdir(os.path.dirname(save_path)), f"Failed to find parent directory of save_path {save_path}"
 
@@ -13,7 +13,7 @@ def root_pos(in_path:str, save_path:str):
       alpha = bgra[:,:,3]
 
       indeces = np.where(alpha > 127) # type: ignore
-      y, x = [int(np.median(indeces[i])) for i in range(2)]
+      y, x = [int(scale * np.median(indeces[i])) for i in range(2)]
       data[filename] = [x, y]
 
    with open(save_path, "w") as f:
@@ -22,7 +22,8 @@ def root_pos(in_path:str, save_path:str):
 if __name__ == "__main__":
    parser = argparse.ArgumentParser()
    parser.add_argument('--in-path',   type=str, required=True, help="Path to folder containing the root images")
-   parser.add_argument('--save-path',  type=str, required=True, help="Path to where to store the json contents at")
+   parser.add_argument('--save-path', type=str, required=True, help="Path to where to store the json contents at")
+   parser.add_argument('--scale', type=float, default=1.0, help="The ratio to scale the coordinates")
    args = parser.parse_args()
 
-   root_pos(args.in_path, args.save_path)
+   root_pos(args.in_path, args.save_path, args.scale)
