@@ -43,7 +43,7 @@ if __name__ == "__main__":
    parser.add_argument('--in-path',  type=str, required=True, help="Path to the source folder containing the rendered frames")
    parser.add_argument('--out-path', type=str, required=False, help="Path to the output folder where resulting images should be saved")
    parser.add_argument('--bins',  type=int, default=16, help="The number of bins for each axis to quanitze into")
-   parser.add_argument('--scale', type=int, default=4, help="The scaling ratio to downsample at")
+   parser.add_argument('--scale', type=int, default=8, help="The scaling ratio to downsample at")
    args = parser.parse_args()
 
    quantize(args.in_path, args.out_path, args.bins, args.scale)
